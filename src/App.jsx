@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Home from "./components/pages/Home";
+import About from "./components/pages/About";
+import Products from "./components/pages/Products";
+import Cart from "./components/pages/Cart";
+
+import { fetchCart } from "./redux/actions/cartActions";
+
+export default function App() {
+  const dispatch = useDispatch();
+  const [search, setSearch] = useState("");
+
+  // 🔥 load cart once when app starts
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
+
+  // 🔥 get cart count from Redux
+  const cartCount =
+    useSelector((state) => state.cart.cart?.cart_items?.length) || 0;
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <Navbar
+        search={search}
+        setSearch={setSearch}
+        cartCount={cartCount}
+      />
 
-export default App
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route
+          path="/products"
+          element={<Products search={search} />}
+        />
+        <Route path="/cart" element={<Cart />} />
+      </Routes>
+
+      <Footer />
+    </>
+  );
+}
