@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPage } from "../../api/pages";
 import SectionRenderer from "../../components/SectionRenderer";
-// src\components\SectionRenderer.jsx
+
 const DynamicPage = () => {
   const { slug } = useParams();
   const [page, setPage] = useState(null);
