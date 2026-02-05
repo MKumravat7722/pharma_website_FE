@@ -9,6 +9,7 @@ const DynamicPage = () => {
 
   useEffect(() => {
     fetchPage(slug || "home").then(res => setPage(res.data));
+    console.log(slug);
   }, [slug]);
 
   if (!page) return <div className="p-10 text-center">Loading...</div>;
@@ -23,3 +24,6 @@ const DynamicPage = () => {
 };
 
 export default DynamicPage;
+
+
+

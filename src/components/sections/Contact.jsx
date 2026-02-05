@@ -1,29 +1,54 @@
 import { useState } from "react";
+import { submitContact } from "../../api/pages";
 
 const Contact = ({ data }) => {
   const { address, phone, email } = data.content;
+
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     message: ""
   });
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 🔥 API call will go here later
-    console.log(form);
-    alert("Message sent successfully!");
-    setForm({ name: "", email: "", message: "" });
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+    try {
+      await submitContact({
+        ...form,
+        submission_type: "contact"
+      });
+
+      setSuccess(true);
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        message: ""
+      });
+    } catch {
+      setError("Something went wrong. Please try again.");
+    }
+
+    setLoading(false);
   };
 
   return (
     <section className="bg-gray-900 text-white py-20">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12">
-        
+
         {/* Left: Contact Info */}
         <div>
           <h2 className="text-4xl font-bold mb-6">
@@ -50,6 +75,18 @@ const Contact = ({ data }) => {
             Send us a message
           </h3>
 
+          {success && (
+            <p className="text-green-600 font-medium">
+              Message sent successfully!
+            </p>
+          )}
+
+          {error && (
+            <p className="text-red-600 font-medium">
+              {error}
+            </p>
+          )}
+
           <input
             type="text"
             name="name"
@@ -70,6 +107,15 @@ const Contact = ({ data }) => {
             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600"
           />
 
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone (optional)"
+            value={form.phone}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600"
+          />
+
           <textarea
             name="message"
             placeholder="Your Message"
@@ -82,9 +128,10 @@ const Contact = ({ data }) => {
 
           <button
             type="submit"
-            className="w-full bg-amber-700 text-white py-3 rounded-lg font-semibold hover:bg-amber-800 transition"
+            disabled={loading}
+            className="w-full bg-amber-700 text-white py-3 rounded-lg font-semibold hover:bg-amber-800 transition disabled:opacity-50"
           >
-            Send Message
+            {loading ? "Sending..." : "Send Message"}
           </button>
         </form>
       </div>

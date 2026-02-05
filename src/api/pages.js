@@ -7,3 +7,8 @@ export const fetchPages = () =>
 
 export const fetchPage = (slug) =>
   axios.get(`${API_BASE}/pages/${slug}`);
+
+export const submitContact = (data) =>
+  axios.post(`${API_BASE}/contact_submissions`, {
+    contact_submission: data
+  });
